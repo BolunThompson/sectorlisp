@@ -39,11 +39,11 @@ kCons:	.asciz	"CONS"				# must be 3rd last
 kEq:	.asciz	"EQ"				# must be 2nd last
 kAtom:	.asciz	"ATOM"				# needs to be last
 
-.set .partition, 1                              # set to one (1) to build with
-                                                # partition table, for maximum
-                                                # compatibility with hardware;
-                                                # else zero for build to be as
-                                                # small as possible
+.set .partition, 0                              # no need for partition table
+                                                
+                                                
+                                                
+                                                
 
 begin:	mov	$0x8000,%sp			# uses higher address as stack
 						# and set independently of SS!
@@ -150,10 +150,10 @@ Intern:	push	%cx				# Intern(cx,di): ax
 	ret
 
 GetChar:xor	%ax,%ax				# GetChar→al:dl
-	int	$0x16				# get keystroke
+	in	$0xEE, %al			# get keystroke
 	mov	%ax,%bp				# used for READ
-PutChar:mov	$0x0e,%ah			# prints CP-437
-	int	$0x10				# vidya service
+						# no need to set font
+PutChar: out	%al, $0xEE			# vidya service
 	cmp	$'\r',%al			# don't clobber
 	jne	.RetDx				# look xchg ret
 	mov	$'\n',%al
